@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HMYS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260330155011_IlkKurulum")]
-    partial class IlkKurulum
+    [Migration("20260422065733_HastaIDKolonuEklendi")]
+    partial class HastaIDKolonuEklendi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace HMYS.Web.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GonderimID"));
+
+                    b.Property<int>("HastaID")
+                        .HasColumnType("int");
 
                     b.Property<bool>("KullanildiMi")
                         .HasColumnType("bit");
@@ -190,7 +193,8 @@ namespace HMYS.Web.Migrations
                 {
                     b.Property<int>("HastaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("HastaID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HastaID"));
 
@@ -213,23 +217,28 @@ namespace HMYS.Web.Migrations
                 {
                     b.Property<int>("RandevuID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("RandevuID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RandevuID"));
 
                     b.Property<int?>("DoktorID")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("DoktorID");
 
                     b.Property<int?>("HastaID")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("HastaID");
 
                     b.Property<string>("ProtokolNo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("ProtokolNo");
 
                     b.Property<DateTime?>("RandevuTarihi")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("RandevuTarihi");
 
                     b.HasKey("RandevuID");
 
@@ -237,7 +246,7 @@ namespace HMYS.Web.Migrations
 
                     b.HasIndex("HastaID");
 
-                    b.ToTable("randevular");
+                    b.ToTable("randevular", (string)null);
                 });
 
             modelBuilder.Entity("HMYS.Core.Entities.Rol", b =>

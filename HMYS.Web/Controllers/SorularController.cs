@@ -1,10 +1,7 @@
-﻿using HMYS.Core;
-using HMYS.Core.Entities;
-using HMYS.Web.Data;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
+using HMYS.Web.Features.Sorular.Queries;
+using HMYS.Web.Features.Sorular.Commands; // Yeni eklediğimiz Command sınıfının yolu
 
 namespace HMYS.Web.Controllers
 {
@@ -12,54 +9,32 @@ namespace HMYS.Web.Controllers
     [ApiController]
     public class SorularController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IDistributedCache _cache; // Redis arayüzümüz
+        private readonly IMediator _mediator;
 
-        // Dependency Injection ile hem SQL'i hem de Redis'i Controller'a alıyoruz
-        public SorularController(ApplicationDbContext context, IDistributedCache cache)
+        public SorularController(IMediator mediator)
         {
-            _context = context;
-            _cache = cache;
+            _mediator = mediator;
         }
 
-        // GET: api/Sorular
+        // 1. OKUMA İŞLEMİ (Cache'den veya SQL'den listeyi getirir)
         [HttpGet]
         public async Task<IActionResult> GetTumSorular()
         {
-            string cacheKey = "anket_sorulari_listesi"; // Redis'te bu veriyi bulacağımız anahtar kelime
-
-            // 1. ADIM: Önce Redis'e sor (Cache'de var mı?)
-            var cachedSorular = await _cache.GetStringAsync(cacheKey);
-
-            if (!string.IsNullOrEmpty(cachedSorular))
-            {
-                Console.WriteLine("-----> DİKKAT: Veriler CACHE'DEN (Sanal Redis) çok hızlı çekildi! Veritabanı yorulmadı.");
-                // REDIS'TE BULDUK! (Cache Hit)
-                // Veritabanına hiç gitmeden, SQL'i hiç yormadan doğrudan JSON'u listeye çevirip döndür
-                var sorularFromCache = JsonSerializer.Deserialize<List<SoruBankasi>>(cachedSorular);
-                return Ok(sorularFromCache);
-            }
-            Console.WriteLine("-----> DİKKAT: Cache boş! Veriler mecburen SQL VERİTABANINDAN çekiliyor...");
-            
-            var sorularFromDb = await _context.SoruBankasi.ToListAsync();
-
-            var cacheOptions = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(10)); // Bu veri 10 dakika boyunca Redis'te yaşasın
-
-            string serializedSorular = JsonSerializer.Serialize(sorularFromDb);
-            await _cache.SetStringAsync(cacheKey, serializedSorular, cacheOptions);
-
-            // Veriyi kullanıcıya döndür
-            return Ok(sorularFromDb);
+            var sorular = await _mediator.Send(new GetTumSorularQuery());
+            return Ok(sorular);
         }
 
-        // POST metodu aynen kalabilir...
+        // 2. YAZMA İŞLEMİ (Yeni soru ekler ve eski Cache'i temizler)
         [HttpPost]
-        public async Task<IActionResult> SoruEkle([FromBody] SoruBankasi yeniSoru)
+        public async Task<IActionResult> SoruEkle([FromBody] SoruEkleCommand command)
         {
-            _context.SoruBankasi.Add(yeniSoru);
-            await _context.SaveChangesAsync();
-            return Ok(new { Mesaj = "Soru başarıyla eklendi!" });
+            var yeniSoruId = await _mediator.Send(command);
+
+            return Ok(new
+            {
+                Mesaj = "Soru başarıyla SQL'e eklendi ve Cache güncellendi!",
+                EklenenSoruID = yeniSoruId
+            });
         }
     }
 }

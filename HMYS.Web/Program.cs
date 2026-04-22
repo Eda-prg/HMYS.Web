@@ -1,5 +1,6 @@
 using HMYS.Web.Data;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,14 +22,27 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDistributedMemoryCache();
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Adlandýrma politikasýný null yaparak C# isimlerini aynen korur
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwaggerUI();
+
+    app.MapScalarApiReference(options =>
+    {
+        // Scalar'a "Benim GET/POST listemi Swagger'ýn dosyasýndan al" diyoruz:
+        options.WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json");
+    });
 }
 
 app.UseHttpsRedirection();

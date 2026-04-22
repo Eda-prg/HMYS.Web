@@ -20,6 +20,7 @@ namespace HMYS.Core.Entities
         public string TokenID { get; set; }
         public bool KvkkOnay { get; set; } = false;
         public DateTime? SonKullanmaTarihi { get; set; }
+        public int? HastaID { get; set; }
         public bool KullanildiMi { get; set; } = false;
 
         [ForeignKey("RandevuID")]
@@ -28,3 +29,4 @@ namespace HMYS.Core.Entities
         public Survey AnketTanim { get; set; }
     }
 }
+

@@ -6,6 +6,7 @@ namespace HMYS.Web.Data
 {
     public class ApplicationDbContext : DbContext
     {
+
         // Kurucu metot (Program.cs'den bağlantı ayarlarını almak için)
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -25,7 +26,34 @@ namespace HMYS.Web.Data
         public DbSet<AnketGonderim> AnketGonderimleri { get; set; }
         public DbSet<CevapMaster> CevapMaster { get; set; }
         public DbSet<CevapDetay> CevapDetay { get; set; }
+      
 
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+         
+            modelBuilder.Entity<Randevu>(entity =>
+            {
+                entity.ToTable("randevular"); // Tablo adını kontrol et (R büyük/küçük?)
+
+                // Bu satır kritik: "Kodda HastaID gördüğünde SQL'de HastaID kolonuna bak" diyoruz.
+                entity.Property(e => e.HastaID).HasColumnName("HastaID");
+                entity.Property(e => e.RandevuID).HasColumnName("RandevuID");
+                entity.Property(e => e.DoktorID).HasColumnName("DoktorID");
+
+                // İlişkiyi de burada elinle bağla (Hata ihtimalini sıfıra indirir)
+                entity.HasOne(d => d.Hasta)
+                      .WithMany(p => p.Randevular)
+                      .HasForeignKey(d => d.HastaID)
+                      .IsRequired(false);
+            });
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // Debug penceresine SQL sorgularını yazdırır
+            optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message));
+        }
     }
 }

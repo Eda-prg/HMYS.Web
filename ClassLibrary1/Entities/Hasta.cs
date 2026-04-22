@@ -11,6 +11,7 @@ namespace HMYS.Core.Entities
     public class Hasta
     {
         [Key]
+        [Column("HastaID", TypeName = "int")]
         public int HastaID { get; set; }
 
         [Required, MaxLength(255)]
