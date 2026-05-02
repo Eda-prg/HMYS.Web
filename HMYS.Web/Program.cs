@@ -1,6 +1,9 @@
+using HMYS.BUsiness.Interfaces;
+using HMYS.BUsiness.Models;
 using HMYS.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using HMYS.BUsiness.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
+// Mevcut builder satýrlarýnýn yanýna ekle
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings")
+);
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

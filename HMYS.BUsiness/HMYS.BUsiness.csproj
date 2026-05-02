@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\HMYS.Core.csproj" />
-    <ProjectReference Include="..\HMYS.DataAccess\HMYS.DataAccess.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\ClassLibrary1\HMYS.Core.csproj" />
+    <ProjectReference Include="..\HMYS.DataAccess\HMYS.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
