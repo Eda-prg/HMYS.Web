@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
-using HMYS.BUsiness.Interfaces;
-using HMYS.BUsiness.Models;
+using HMYS.Business.Interfaces;
+using HMYS.Business.Models;
 
 
-namespace HMYS.BUsiness.Services
+namespace HMYS.Business.Services
 {
     public class EmailService : IEmailService
     {

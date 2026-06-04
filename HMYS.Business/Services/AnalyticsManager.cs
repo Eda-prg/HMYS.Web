@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HMYS.Business.Interfaces;
 
-namespace HMYS.BUsiness
+namespace HMYS.Business
 {
-    public class AnalyticsManager
+    public class AnalyticsManager : IAnalyticsManager
     {
         public double CalculateAverageScore(List<int> scores)
         {
@@ -14,7 +13,6 @@ namespace HMYS.BUsiness
             return Math.Round(scores.Average(), 2);
         }
 
-        // Memnuniyet yüzdesini hesaplar (5 üzerinden)
         public double CalculateSatisfactionRate(double averageScore)
         {
             return (averageScore / 5) * 100;

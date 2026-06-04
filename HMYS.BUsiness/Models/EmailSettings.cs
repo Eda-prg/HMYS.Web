@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HMYS.BUsiness.Models
+namespace HMYS.Business.Models
 {
     public class EmailSettings
     {

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace HMYS.Business.Interfaces
 {
-    public interface IEmailService
+    public interface IAnalyticsManager
     {
-        Task<bool> SendSurveyLinkAsync(string toEmail, string hastaAdi, string token);
+        double CalculateAverageScore(List<int> scores);
+        double CalculateSatisfactionRate(double averageScore);
     }
 }

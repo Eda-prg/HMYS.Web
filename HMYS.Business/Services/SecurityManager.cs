@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HMYS.BUsiness
+namespace HMYS.Business
 {
     public class cite_startAttribute : Attribute { }
     public class SecurityManager

@@ -1,5 +1,5 @@
-﻿using HMYS.BUsiness;
-using HMYS.BUsiness.Interfaces;  // ← EKLENDİ
+﻿using HMYS.Business;
+using HMYS.Business.Interfaces;  // ← EKLENDİ
 using HMYS.Core;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +9,7 @@ namespace HMYS.Web.Controllers
     [ApiController]
     public class HomeController : Controller
     {
-        private readonly AnketManager _anketManager = new AnketManager();
+        private readonly AnketManager _anketManager;
         private readonly SecurityManager _securityManager = new SecurityManager();
         private readonly LinkManager _linkManager = new LinkManager();
         private readonly ValidationManager _validation = new ValidationManager();
@@ -23,6 +23,7 @@ namespace HMYS.Web.Controllers
         public HomeController(IEmailService emailService)
         {
             _emailService = emailService;
+            _anketManager = new AnketManager(_analytics, _logger);
         }
 
         [HttpGet("test-hmys")]

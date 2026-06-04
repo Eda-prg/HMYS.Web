@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HMYS.BUsiness
+namespace HMYS.Business
 {
     public class EncryptionHelper
     {

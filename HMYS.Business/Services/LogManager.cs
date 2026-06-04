@@ -1,27 +1,19 @@
 ﻿using HMYS.Core;
-using System;
+using HMYS.Business.Interfaces;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HMYS.BUsiness
+namespace HMYS.Business
 {
-    public class LogManager
+    public class LogManager : ILogManager
     {
         private static List<AuditLog> _logs = new List<AuditLog>();
 
         public void LogAction(string action, string details)
         {
-            var log = new AuditLog { Action = action, Details = details };
-            _logs.Add(log);
-
-            // Konsola da yazdıralım ki takip edebilelim
+            AddLog(action, details); // DRY — tekrar yazmak yerine AddLog'u çağır
             Debug.WriteLine($"[LOG]: {action} - {details}");
         }
-
-        public List<AuditLog> GetLogs() => _logs;
 
         public void AddLog(string action, string details)
         {
@@ -34,12 +26,7 @@ namespace HMYS.BUsiness
             _logs.Add(log);
         }
 
-        // Tüm logları geriye döner
-        public List<AuditLog> GetAllLogs()
-        {
-            return _logs;
-        }
+        public List<AuditLog> GetAllLogs() => _logs;
+        public List<AuditLog> GetLogs() => _logs;
     }
 }
-
-

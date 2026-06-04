@@ -1,5 +1,5 @@
-﻿using HMYS.BUsiness.Interfaces;
-using HMYS.BUsiness.Services;
+﻿using HMYS.Business.Interfaces;
+using HMYS.Business.Services;
 using HMYS.Web.Features.Sorular.Commands; // Yeni eklediğimiz Command sınıfının yolu
 using HMYS.Web.Features.Sorular.Queries;
 using HMYS.Web.Features.Sorular.Dtos;

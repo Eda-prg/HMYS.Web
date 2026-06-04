@@ -2,6 +2,7 @@
 using HMYS.Web.Features.AnketGonderim.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace HMYS.Web.Controllers
 {
@@ -10,19 +11,20 @@ namespace HMYS.Web.Controllers
     public class AnketGonderimController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IConfiguration _configuration; // ← EKLENDİ
 
-        public AnketGonderimController(IMediator mediator)
+        public AnketGonderimController(IMediator mediator, IConfiguration configuration)
         {
             _mediator = mediator;
+            _configuration = configuration; // ← EKLENDİ
         }
+
         [HttpPost("token-uret")]
         public async Task<IActionResult> TokenUret([FromBody] TokenOlusturCommand command)
         {
             var token = await _mediator.Send(command);
-
-            // Gerçek hayatta burada hastanın telefonuna SMS atma servisi devreye girer.
-            // Biz şimdilik React ön yüzümüze tıklanacak bir link simülasyonu yapıyoruz:
-            string hastaIcinLink = $"http://localhost:3000/anket?token={token}";
+            string frontendUrl = _configuration["FrontendUrl"] ?? "http://localhost:3000"; // ← DÜZELTİLDİ
+            string hastaIcinLink = $"{frontendUrl}/anket?token={token}";
 
             return Ok(new
             {
@@ -39,13 +41,8 @@ namespace HMYS.Web.Controllers
             var sonuc = await _mediator.Send(query);
 
             if (!sonuc.GecerliMi)
-            {
-                // Güvenlikten geçemedi (Süresi bitmiş, kullanılmış vs.) - 400 Bad Request dön
                 return BadRequest(new { Mesaj = sonuc.HataMesaji });
-            }
 
-            // Güvenlikten başarıyla geçti! 
-            // React tarafına Hasta ve Randevu ID'sini ver ki anketi bu hasta adına SQL'e kaydedebilsin.
             return Ok(new
             {
                 Mesaj = "Bağlantı güvenli. Anket sayfası açılıyor...",
@@ -53,20 +50,12 @@ namespace HMYS.Web.Controllers
                 RandevuId = sonuc.RandevuId
             });
         }
-            [HttpPost("cevapla")]
-            public async Task<IActionResult> AnketCevapla([FromBody] AnketCevaplaCommand command)
-            {
-                try
-                {
-                    var sonuc = await _mediator.Send(command);
-                    return Ok(new { Mesaj = "Anket başarıyla kaydedildi! Katılımınız için teşekkürler." });
-                }
-                catch (Exception ex)
-                {
-                var gercekHata = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return BadRequest(new { Hata = gercekHata });
-            }
-            }
+
+        [HttpPost("cevapla")]
+        public async Task<IActionResult> AnketCevapla([FromBody] AnketCevaplaCommand command)
+        {
+            var sonuc = await _mediator.Send(command); // try/catch kaldırıldı — global handler'a taşı
+            return Ok(new { Mesaj = "Anket başarıyla kaydedildi! Katılımınız için teşekkürler." });
         }
-        }
-    
+    }
+}
